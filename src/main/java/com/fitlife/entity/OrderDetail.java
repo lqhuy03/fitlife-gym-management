@@ -7,7 +7,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 @Data
 @Entity
-@Table(name = "OrderDetails")
+@Table(name = "order_details") // Tên bảng có gạch dưới
 public class OrderDetail implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +20,10 @@ public class OrderDetail implements Serializable {
     private Integer quantity;
 
     @ManyToOne
-    @JoinColumn(name = "OrderId")
+    @JoinColumn(name = "order_id") // Sửa thành snake_case
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "ProductId")
+    @JoinColumn(name = "product_id") // Sửa thành snake_case
     private Product product;
 }

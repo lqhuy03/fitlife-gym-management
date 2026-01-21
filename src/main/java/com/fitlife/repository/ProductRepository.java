@@ -1,22 +1,18 @@
 package com.fitlife.repository;
 
 import com.fitlife.entity.Product;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
+@Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    // Tìm theo danh mục
-    List<Product> findByCategoryId(String categoryId);
 
-    // Tìm kiếm theo tên (Cho ô Search) - đáp ứng yêu cầu ASM
+    // Khai báo phương thức để lọc sản phẩm theo mã danh mục
+    // Spring Data JPA sẽ tự hiểu và tạo lệnh: SELECT * FROM products WHERE category_id = ?
+    List<Product> findByCategoryId(String cid);
+
+    // Bạn có thể thêm phương thức tìm kiếm tên nếu cần cho giao diện
     List<Product> findByNameContainingIgnoreCase(String name);
-
-    // Lọc theo khoảng giá - đáp ứng yêu cầu ASM
-    List<Product> findByPriceBetween(Double min, Double max);
-
-    // Lấy danh sách sản phẩm hiển thị trang chủ (có phân trang)
-    Page<Product> findAll(Pageable pageable);
 }

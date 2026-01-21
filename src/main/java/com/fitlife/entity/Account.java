@@ -1,14 +1,17 @@
 package com.fitlife.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import java.io.Serializable;
 import java.util.List;
 
 @SuppressWarnings("serial")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "Accounts")
+@Table(name = "accounts") // Chữ thường
 public class Account implements Serializable {
     @Id
     @Column(columnDefinition = "varchar(50)")
@@ -25,10 +28,10 @@ public class Account implements Serializable {
 
     private String photo;
 
-    // MySQL: BIT(1) -> Java: Boolean
-    private Boolean role = false;
-    private Boolean isActive = true;
+    private Boolean activated = true;
+    private Boolean admin = false;
 
+    @JsonIgnore // QUAN TRỌNG: Ngăn vòng lặp khi lấy Account -> dính Order -> dính Account
     @OneToMany(mappedBy = "account")
     private List<Order> orders;
 }

@@ -1,15 +1,21 @@
 package com.fitlife.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("serial")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "Products")
+@Table(name = "products")
 public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,31 +24,30 @@ public class Product implements Serializable {
     @Column(nullable = false)
     private String name;
 
+    // Bỏ nullable = false để tránh lỗi khi chưa có link ảnh
+    @Column(name = "image")
+    private String image;
+
     @Column(nullable = false)
     private Double price;
 
-    private String image;
-
     @Temporal(TemporalType.DATE)
-    @Column(name = "CreateDate")
+    @Column(name = "create_date")
     private Date createDate = new Date();
 
     private Boolean available = true;
 
-    @Column(name = "CategoryId")
-    private String categoryId; // Lưu ID để tiện truy vấn nhanh nếu không muốn join
-
-    // 'PHYSICAL' hoặc 'MEMBERSHIP'
-    @Column(name = "ProductType")
+    @Column(name = "product_type")
     private String productType;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "CategoryId", insertable = false, updatable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetails;
 }
