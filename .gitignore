@@ -1,4 +1,26 @@
-/target/
-/.idea/
+# ==========================================
+# FitLife Project - .gitignore
+# ==========================================
+
+# 1. Compiled class file
+*.class
+target/
+
+# 2. IDE specific files (IntelliJ IDEA, Eclipse)
+.idea/
 *.iml
+*.iws
+.project
+.classpath
+.settings/
+
+# 3. OS generated files
 .DS_Store
+Thumbs.db
+
+# 4. Log file
+*.log
+
+# 5. Environment variables / Secrets (NEVER PUSH SECRETS TO GITHUB)
+.env
+application-secret.yml
