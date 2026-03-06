@@ -20,3 +20,8 @@ spring:
     flyway:
       enabled: true              # 2. BẬT FLYWAY
       baseline-on-migrate: true  # 3. CHẤP NHẬN BASELINE
+
+cloudinary:
+  cloud-name: dvseaoy5k
+  api-key: 548378961766311
+  api-secret: GqtAOdXDUzX9sY5Eqg6LWrb_oKU
