@@ -13,10 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CheckInHistoryRepository extends JpaRepository<CheckInHistory, Long> {
 
-    /**
-     * Truy vấn kiểm tra xem hội viên ĐÃ VÀO CỬA THÀNH CÔNG trong ngày hôm nay chưa
-     * Để tránh việc khách quẹt thẻ liên tục làm spam database
-     */
+    // Anti-Spam check-in function
     @Query("SELECT c FROM CheckInHistory c WHERE c.member = :member " +
             "AND c.checkInTime >= :startOfDay AND c.checkInTime <= :endOfDay " +
             "AND c.status = 'ACCESS_GRANTED'")
@@ -24,4 +21,13 @@ public interface CheckInHistoryRepository extends JpaRepository<CheckInHistory, 
             @Param("member") Member member,
             @Param("startOfDay") LocalDateTime startOfDay,
             @Param("endOfDay") LocalDateTime endOfDay);
+
+    //  Count check-ins in a given period for dashboard stats
+    @Query("SELECT COUNT(c) FROM CheckInHistory c WHERE c.member.id = :memberId " +
+            "AND c.checkInTime >= :startDate AND c.checkInTime <= :endDate " +
+            "AND c.status = 'ACCESS_GRANTED'")
+    int countCheckinsInPeriod(
+            @Param("memberId") Long memberId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }

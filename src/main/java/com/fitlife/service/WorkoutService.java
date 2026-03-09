@@ -18,7 +18,6 @@ public class WorkoutService {
     private final MemberRepository memberRepository;
     private final WorkoutDetailRepository workoutDetailRepository;
 
-    // THÊM DÒNG NÀY ĐỂ TỐI ƯU TỐC ĐỘ ĐỌC DỮ LIỆU
     @Transactional(readOnly = true)
     public WorkoutPlan getCurrentPlan(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -28,16 +27,14 @@ public class WorkoutService {
                 .orElseThrow(() -> new RuntimeException("Hội viên hiện không có lịch tập nào đang kích hoạt."));
     }
 
-    @Transactional // THÊM DÒNG NÀY ĐỂ ĐẢM BẢO AN TOÀN KHI UPDATE
+    @Transactional
     public void completeWorkoutDetail(Long detailId) {
-        // 1. Tìm chi tiết bài tập theo ID
         WorkoutDetail workoutDetail = workoutDetailRepository.findById(detailId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bài tập với ID: " + detailId));
 
-        // 2. Cập nhật trạng thái hoàn thành
         workoutDetail.setIsCompleted(true);
 
-        // 3. Lưu lại vào database
         workoutDetailRepository.save(workoutDetail);
     }
+
 }
