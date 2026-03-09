@@ -14,4 +14,5 @@ public class GymPackageResponse {
     private Integer durationMonths;
     private String description;
     private String status;
+    private String thumbnailUrl;
 }

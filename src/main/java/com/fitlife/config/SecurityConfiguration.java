@@ -32,18 +32,22 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Public
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/ai/**").permitAll()
+                        // 1. PUBLIC (Mở khóa toàn bộ cho khách)
+                        .requestMatchers("/auth/**", "/api/v1/auth/**").permitAll()
+                        .requestMatchers("/ai/**", "/api/v1/ai/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
-                        // 2. Business workout & health
-                        .requestMatchers("/workout/**").hasAnyRole("MEMBER", "STAFF", "ADMIN")
-                        .requestMatchers("/health/**").hasAnyRole("MEMBER", "STAFF", "ADMIN")
+                        // Cho phép ai cũng xem được danh sách gói tập
+                        .requestMatchers(HttpMethod.GET, "/packages/**", "/api/v1/packages/**").permitAll()
 
-                        // 3. Administration
-                        .requestMatchers(HttpMethod.POST, "/packages/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/checkin/**").hasAnyRole("ADMIN", "STAFF", "MEMBER")
+                        // 2. BUSINESS & HEALTH (Chỉ cần đăng nhập là dùng được)
+                        .requestMatchers("/workout/**", "/api/v1/workout/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_STAFF", "ROLE_ADMIN", "MEMBER", "STAFF", "ADMIN")
+                        .requestMatchers("/health/**", "/api/v1/health/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_STAFF", "ROLE_ADMIN", "MEMBER", "STAFF", "ADMIN")
+                        .requestMatchers("/members/**", "/api/v1/members/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_STAFF", "ROLE_ADMIN", "MEMBER", "STAFF", "ADMIN")
+
+                        // 3. ADMINISTRATION (Chỉ Admin/Staff mới được đụng vào)
+                        .requestMatchers(HttpMethod.POST, "/packages/**", "/api/v1/packages/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STAFF", "ADMIN", "STAFF")
+                        .requestMatchers("/checkin/**", "/api/v1/checkin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STAFF", "ROLE_MEMBER", "ADMIN", "STAFF", "MEMBER")
 
                         .anyRequest().authenticated()
                 )
