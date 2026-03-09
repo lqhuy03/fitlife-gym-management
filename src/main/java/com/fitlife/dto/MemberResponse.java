@@ -14,4 +14,5 @@ public class MemberResponse {
     private String phone;
     private String email;
     private String status;
+    private String avatarUrl;
 }

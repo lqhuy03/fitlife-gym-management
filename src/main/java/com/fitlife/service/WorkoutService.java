@@ -36,5 +36,4 @@ public class WorkoutService {
 
         workoutDetailRepository.save(workoutDetail);
     }
-
 }

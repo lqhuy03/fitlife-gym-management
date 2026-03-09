@@ -36,7 +36,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/ai/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-
+                        .requestMatchers("/error").permitAll()
                         // 2. Business workout & health
                         .requestMatchers("/workout/**").hasAnyRole("MEMBER", "STAFF", "ADMIN")
                         .requestMatchers("/health/**").hasAnyRole("MEMBER", "STAFF", "ADMIN")

@@ -4,6 +4,7 @@ import com.fitlife.dto.ApiResponse;
 import com.fitlife.dto.DashboardResponse;
 import com.fitlife.dto.MemberCreationRequest;
 import com.fitlife.dto.MemberResponse;
+import com.fitlife.dto.PageResponse; // Thêm thư viện này cho Phân trang
 import com.fitlife.entity.User;
 import com.fitlife.repository.UserRepository;
 import com.fitlife.service.DashboardService;
@@ -27,7 +28,6 @@ import java.security.Principal;
 public class MemberController {
 
     private final MemberService memberService;
-
     private final DashboardService dashboardService;
     private final UserRepository userRepository;
 
@@ -79,6 +79,28 @@ public class MemberController {
                 .code(HttpStatus.OK.value())
                 .message("Lấy báo cáo cá nhân thành công")
                 .data(report)
+                .build());
+    }
+
+    // ============================================================================
+    // API get all members (Pagination, Sorting, Filtering) - DÀNH CHO ADMIN/STAFF
+    // ============================================================================
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'ROLE_ADMIN', 'ROLE_STAFF')")
+    public ResponseEntity<ApiResponse<PageResponse<MemberResponse>>> getAllMembers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            @RequestParam(required = false) String keyword
+    ) {
+        // Gọi Service để xử lý logic phân trang và tìm kiếm
+        PageResponse<MemberResponse> result = memberService.getAllMembers(page, size, sortBy, sortDir, keyword);
+
+        return ResponseEntity.ok(ApiResponse.<PageResponse<MemberResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Lấy danh sách hội viên thành công")
+                .data(result)
                 .build());
     }
 }

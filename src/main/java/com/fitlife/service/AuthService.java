@@ -19,30 +19,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final MemberRepository memberRepository; // Cần để tạo Profile 7 cột
+    private final MemberRepository memberRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder; //
+    private final PasswordEncoder passwordEncoder;
 
-    // ====================================================================
-    // 1. LOGIC ĐĂNG KÝ (Tạo User 5 cột & Member 7 cột)
-    // ====================================================================
-    @Transactional // Đảm bảo an toàn dữ liệu cho cả 2 bảng
+    // Logic Register: Create User + Member
+    @Transactional
     public String register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username đã tồn tại!");
         }
 
-        // Tạo User (Đúng 5 cột: id, username, password, role, status)
         User user = User.builder()
                 .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword())) // Mã hóa BCrypt
+                .password(passwordEncoder.encode(request.getPassword())) //  BCrypt
                 .role("MEMBER")
                 .status("ACTIVE")
                 .build();
         User savedUser = userRepository.save(user);
 
-        // Tạo Member (Đúng 7 cột: id, user_id, full_name, phone, email, status, avatar_url)
         Member member = Member.builder()
                 .user(savedUser)
                 .fullName(request.getFullName())
@@ -56,11 +52,8 @@ public class AuthService {
         return "Đăng ký thành công!";
     }
 
-    // ====================================================================
-    // 2. LOGIC ĐĂNG NHẬP (Giữ nguyên của em)
-    // ====================================================================
+    // Logic Login: Authenticate Spring Security + Generate JWT
     public LoginResponse login(LoginRequest request) {
-        // Kiểm tra Username/Password qua Spring Security
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -68,7 +61,7 @@ public class AuthService {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found after auth!"));
 
-        // In thẻ bài JWT
+        // Print cards JWT
         String token = jwtService.generateToken(user);
 
         return LoginResponse.builder()
