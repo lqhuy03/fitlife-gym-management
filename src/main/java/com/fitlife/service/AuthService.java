@@ -39,6 +39,7 @@ public class AuthService {
                 .build();
         User savedUser = userRepository.save(user);
 
+
         Member member = Member.builder()
                 .user(savedUser)
                 .fullName(request.getFullName())
