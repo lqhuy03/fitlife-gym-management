@@ -21,7 +21,7 @@ public class GymPackageService {
 
     private final GymPackageRepository gymPackageRepository;
 
-    // --- HÀM CŨ: TẠO GÓI TẬP ---
+    // Create Package
     @Transactional
     public GymPackageResponse createPackage(GymPackageCreationRequest request) {
         if (gymPackageRepository.existsByName(request.getName())) {
@@ -38,19 +38,19 @@ public class GymPackageService {
 
         GymPackage savedPackage = gymPackageRepository.save(newPackage);
 
-        return mapToResponse(savedPackage); // Gọi hàm phụ trợ ở dưới
+        return mapToResponse(savedPackage);
     }
 
-    // --- HÀM MỚI: LẤY DANH SÁCH PHÂN TRANG ---
+    // Get List Pagination
     @Transactional(readOnly = true)
     public PageResponse<GymPackageResponse> getAllPackages(int page, int size, String sortBy, String sortDir, String keyword) {
 
-        // 1. Cấu hình Sắp xếp
+        // 1. Config sort
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        // 2. Cấu hình phân trang (trừ đi 1 vì JPA đếm từ 0)
+        // 2. Config pagination
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
         // 3. Query Database
@@ -61,12 +61,12 @@ public class GymPackageService {
             packagePage = gymPackageRepository.findAll(pageable);
         }
 
-        // 4. Chuyển Entity -> DTO
+        // 4.  Entity -> DTO
         List<GymPackageResponse> content = packagePage.getContent().stream()
                 .map(this::mapToResponse) // Gọi hàm phụ trợ cho gọn
                 .toList();
 
-        // 5. Đóng gói
+        // 5. Pack
         return PageResponse.<GymPackageResponse>builder()
                 .currentPage(page)
                 .totalPages(packagePage.getTotalPages())
@@ -76,7 +76,7 @@ public class GymPackageService {
                 .build();
     }
 
-    // --- HÀM PHỤ TRỢ DÙNG CHUNG ---
+    // Function sp
     private GymPackageResponse mapToResponse(GymPackage pkg) {
         return GymPackageResponse.builder()
                 .id(pkg.getId())

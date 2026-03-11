@@ -82,9 +82,7 @@ public class MemberController {
                 .build());
     }
 
-    // ============================================================================
-    // API get all members (Pagination, Sorting, Filtering) - DÀNH CHO ADMIN/STAFF
-    // ============================================================================
+    // API get all members (Pagination, Sorting, Filtering) - ADMIN/STAFF
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'ROLE_ADMIN', 'ROLE_STAFF')")
     public ResponseEntity<ApiResponse<PageResponse<MemberResponse>>> getAllMembers(
@@ -94,7 +92,6 @@ public class MemberController {
             @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(required = false) String keyword
     ) {
-        // Gọi Service để xử lý logic phân trang và tìm kiếm
         PageResponse<MemberResponse> result = memberService.getAllMembers(page, size, sortBy, sortDir, keyword);
 
         return ResponseEntity.ok(ApiResponse.<PageResponse<MemberResponse>>builder()

@@ -13,13 +13,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/packages") // Đổi lại thành chuẩn chung
+@RequestMapping("/packages")
 @RequiredArgsConstructor
 public class GymPackageController {
 
     private final GymPackageService gymPackageService;
 
-    // --- API MỚI: XEM DANH SÁCH GÓI TẬP (AI CŨNG XEM ĐƯỢC) ---
+    // List Package
     @GetMapping
     @PreAuthorize("permitAll()")
     public ResponseEntity<ApiResponse<PageResponse<GymPackageResponse>>> getAllPackages(
@@ -38,7 +38,7 @@ public class GymPackageController {
                 .build());
     }
 
-    // --- API CŨ: TẠO GÓI TẬP (CHỈ ADMIN MỚI ĐƯỢC TẠO) ---
+    // Create Package
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<GymPackageResponse>> createPackage(@Valid @RequestBody GymPackageCreationRequest request) {

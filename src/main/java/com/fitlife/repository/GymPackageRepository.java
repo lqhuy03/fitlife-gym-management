@@ -12,6 +12,6 @@ public interface GymPackageRepository extends JpaRepository<GymPackage, Long> {
     // Check if a package with the given name already exists
     boolean existsByName(String name);
 
-    // THÊM MỚI: Phân trang & Lọc theo tên gói (Vd: Tìm chữ "VIP")
+    // Pagination & Filter for name
     Page<GymPackage> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }

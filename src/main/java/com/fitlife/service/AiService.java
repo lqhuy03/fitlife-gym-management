@@ -49,7 +49,7 @@ public class AiService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hội viên"));
 
         HealthMetric latestMetric = healthMetricRepository.findFirstByMemberOrderByRecordedAtDesc(member)
-                .orElseThrow(() -> new RuntimeException("Hội viên chưa có chỉ số BMI. Hãy đo trước khi tư vấn AI."));
+                .orElseThrow(() -> new RuntimeException("Hội viên chưa có chỉ số BMI..."));
 
         String prompt = buildPrompt(member, latestMetric, request);
 

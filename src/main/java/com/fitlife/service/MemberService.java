@@ -61,7 +61,6 @@ public class MemberService {
 
         String avatarUrl = cloudinaryService.uploadImage(file, "avatars", "member_" + member.getId());
         member.setAvatarUrl(avatarUrl);
-        // Không nhất thiết phải gọi save() vì có @Transactional, Hibernate sẽ tự dirty check
         return avatarUrl;
     }
 

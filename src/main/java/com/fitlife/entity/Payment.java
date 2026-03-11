@@ -25,7 +25,6 @@ public class Payment {
 
     private double amount;
 
-    // SỬA Ở ĐÂY: Đảm bảo nullable = true (mặc định là true nhưng mình ghi rõ ra cho chắc)
     @Column(name = "payment_date", nullable = true)
     private LocalDateTime paymentDate;
 
