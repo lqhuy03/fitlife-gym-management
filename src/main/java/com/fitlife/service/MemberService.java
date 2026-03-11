@@ -30,6 +30,7 @@ public class MemberService {
     @Transactional
     public MemberResponse createMember(MemberCreationRequest request) {
         if (memberRepository.existsByPhone(request.getPhone())) {
+            // Keep Exception messages in Vietnamese for the End-user
             throw new RuntimeException("Số điện thoại đã được đăng ký.");
         }
 
@@ -56,17 +57,25 @@ public class MemberService {
         Member member = user.getMember();
         if (member == null) throw new RuntimeException("Không tìm thấy thông tin hội viên");
 
-        // Gợi ý: Xóa ảnh cũ trên Cloudinary nếu có để tiết kiệm dung lượng
-        // if (member.getAvatarUrl() != null) { cloudinaryService.deleteImage(publicId); }
+        if (member.getAvatarUrl() != null) {
+            String publicId = "avatars/member_" + member.getId();
+            try {
+                cloudinaryService.deleteImage(publicId);
+            } catch (Exception e) {
+                System.err.println("Không thể xóa ảnh cũ trên Cloudinary: " + e.getMessage());
+            }
+        }
 
+        // Upload new photo
         String avatarUrl = cloudinaryService.uploadImage(file, "avatars", "member_" + member.getId());
         member.setAvatarUrl(avatarUrl);
+
         return avatarUrl;
     }
 
     @Transactional(readOnly = true)
     public PageResponse<MemberResponse> getAllMembers(int page, int size, String sortBy, String sortDir, String keyword) {
-        // Bảo vệ logic phân trang: Đảm bảo page không bao giờ < 1
+        // Protect pagination logic: Ensure page is never < 1
         int pageIndex = Math.max(0, page - 1);
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
@@ -83,7 +92,7 @@ public class MemberService {
         }
 
         List<MemberResponse> content = memberPage.getContent().stream()
-                .map(this::mapToMemberResponse) // Tách hàm mapping cho sạch code
+                .map(this::mapToMemberResponse) // Separate mapping method for cleaner code
                 .toList();
 
         return PageResponse.<MemberResponse>builder()
@@ -95,7 +104,7 @@ public class MemberService {
                 .build();
     }
 
-    // Hàm bổ trợ để tái sử dụng logic mapping
+    // Helper method to reuse mapping logic across the service
     private MemberResponse mapToMemberResponse(Member member) {
         return MemberResponse.builder()
                 .id(member.getId())

@@ -35,4 +35,17 @@ public class CloudinaryService {
             throw new RuntimeException("Lỗi khi tải ảnh lên đám mây: " + e.getMessage());
         }
     }
+
+    /**
+     * Xóa ảnh trên Cloudinary
+     * @param publicId Full Path của ảnh (Vd: "fitlife/avatars/member_1")
+     */
+    public void deleteImage(String publicId) {
+        try {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            System.out.println("Đã xóa ảnh cũ trên Cloudinary: " + publicId);
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi xóa ảnh trên đám mây: " + e.getMessage());
+        }
+    }
 }
