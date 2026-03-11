@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate; // Thêm import này
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -26,16 +26,15 @@ public class PaymentService {
 
     @Transactional
     public String createPaymentUrl(Long subscriptionId, HttpServletRequest request) {
-        System.out.println("===> Bắt đầu tạo URL cho Sub ID: " + subscriptionId);
-
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Subscription ID: " + subscriptionId));
 
-        if (subscription.getGymPackage() == null) {
-            throw new RuntimeException("Subscription này chưa được gắn Gói tập!");
+        // Block it if the package has already been paid
+        if ("ACTIVE".equals(subscription.getStatus())) {
+            throw new RuntimeException("Gói tập này đã được thanh toán và đang hoạt động!");
         }
 
-        // Tạo Payment tạm thời (PENDING)
+        // Create Payment record with PENDING status
         Payment payment = Payment.builder()
                 .subscription(subscription)
                 .amount(subscription.getGymPackage().getPrice())
@@ -44,7 +43,7 @@ public class PaymentService {
                 .build();
         payment = paymentRepository.save(payment);
 
-        // Cấu hình tham số VNPay
+        // Config VNPay parameter
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnPayConfig.getVnp_Version());
         vnp_Params.put("vnp_Command", vnPayConfig.getVnp_Command());
@@ -61,7 +60,6 @@ public class PaymentService {
         java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
         vnp_Params.put("vnp_CreateDate", formatter.format(new Date()));
 
-        // Sắp xếp tham số
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
@@ -80,7 +78,6 @@ public class PaymentService {
                     }
                 }
             }
-
             String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.getSecretKey(), hashData.toString());
             return vnPayConfig.getVnpPayUrl() + "?" + query.toString() + "&vnp_SecureHash=" + vnp_SecureHash;
 
@@ -98,6 +95,11 @@ public class PaymentService {
             Payment payment = paymentRepository.findById(Long.parseLong(txnRef))
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy giao dịch"));
 
+            // Avoid VNPay call two
+            if ("COMPLETED".equals(payment.getStatus())) {
+                return "ALREADY_PAID";
+            }
+
             payment.setVnpTransactionNo(request.getParameter("vnp_TransactionNo"));
             payment.setVnpResponseCode(vnp_ResponseCode);
             payment.setVnpOrderInfo(request.getParameter("vnp_OrderInfo"));
@@ -106,11 +108,9 @@ public class PaymentService {
                 payment.setStatus("COMPLETED");
                 payment.setPaymentDate(LocalDateTime.now());
 
-                // Cập nhật Subscription
+                // Active Subscription after money into bag
                 Subscription sub = payment.getSubscription();
                 sub.setStatus("ACTIVE");
-
-                // FIX LỖI ĐỎ: Ép từ LocalDateTime về LocalDate
                 sub.setStartDate(LocalDate.now());
 
                 if (sub.getGymPackage() != null) {

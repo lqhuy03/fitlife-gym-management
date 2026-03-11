@@ -26,13 +26,13 @@ public class Subscription {
     @JoinColumn(name = "package_id", nullable = false)
     private GymPackage gymPackage;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date")
     private LocalDate endDate;
 
-    // Status: "ACTIVE", "EXPIRED", "CANCELLED"
+    // Status: "PENDING", "ACTIVE", "EXPIRED", "CANCELLED"
     @Column(name = "status", nullable = false, length = 20)
     private String status;
 }
