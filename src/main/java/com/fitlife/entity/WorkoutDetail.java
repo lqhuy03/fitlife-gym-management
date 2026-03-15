@@ -1,6 +1,6 @@
 package com.fitlife.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +15,7 @@ public class WorkoutDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String exercise_name; // Join column name with underscore to match JSON field
+    private String exercise_name;
     private Integer sets;
     private String reps;
 
@@ -27,8 +27,8 @@ public class WorkoutDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id")
-    @JsonBackReference
-    @EqualsAndHashCode.Exclude // THÊM DÒNG NÀY
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore // FIX: Ngắt lặp ngược về Session
     private WorkoutSession session;
 }

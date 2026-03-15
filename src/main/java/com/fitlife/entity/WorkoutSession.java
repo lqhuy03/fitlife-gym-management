@@ -1,17 +1,12 @@
 package com.fitlife.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
-/**
- * Đại diện cho một buổi tập trong ngày (ví dụ: Thứ 2 tập Ngực)
- */
 @Entity
 @Table(name = "workout_sessions")
 @Data
@@ -28,15 +23,15 @@ public class WorkoutSession {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
-    @JsonBackReference
-    @EqualsAndHashCode.Exclude // THÊM DÒNG NÀY
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore // FIX: Ngắt lặp ngược về Plan
     private WorkoutPlan workoutPlan;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonManagedReference
     @Builder.Default
-    @EqualsAndHashCode.Exclude // THÊM DÒNG NÀY
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    // FIX: Xóa @JsonManagedReference đi
     private Set<WorkoutDetail> details = new LinkedHashSet<>();
 }

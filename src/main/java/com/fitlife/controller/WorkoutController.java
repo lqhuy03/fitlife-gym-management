@@ -3,20 +3,33 @@ package com.fitlife.controller;
 import com.fitlife.dto.ApiResponse;
 import com.fitlife.entity.WorkoutPlan;
 import com.fitlife.service.WorkoutService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/workout")
 @RequiredArgsConstructor
+@Tag(name = "Workout Management", description = "Quản lý lịch tập và tiến độ tập luyện")
 public class WorkoutController {
 
     private final WorkoutService workoutService;
 
-    @GetMapping("/current/{memberId}")
-    public ResponseEntity<ApiResponse<WorkoutPlan>> getCurrentPlan(@PathVariable Long memberId) {
-        WorkoutPlan plan = workoutService.getCurrentPlan(memberId);
+    /**
+     * API Lấy lịch tập hiện tại (ACTIVE) của hội viên đang đăng nhập.
+     * Đã cập nhật tên hàm thành getCurrentPlanByUsername để khớp với WorkoutService.java
+     */
+    @GetMapping("/current")
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'ROLE_MEMBER')")
+    public ResponseEntity<ApiResponse<WorkoutPlan>> getCurrentPlan(Principal principal) {
+
+        // Gọi đúng tên hàm trong file Service em vừa gửi
+        WorkoutPlan plan = workoutService.getCurrentPlanByUsername(principal.getName());
+
         return ResponseEntity.ok(
                 ApiResponse.<WorkoutPlan>builder()
                         .code(200)
@@ -26,16 +39,22 @@ public class WorkoutController {
         );
     }
 
-    @PatchMapping("/detail/{detailId}/complete")
-    public ResponseEntity<ApiResponse<String>> completeWorkoutDetail(@PathVariable Long detailId) {
+    /**
+     * API Đánh dấu hoàn thành bài tập (Toggle).
+     * Tại sao dùng Toggle? Vì người dùng có thể lỡ tay bấm nhầm, bấm lại lần nữa để hủy tick xanh.
+     */
+    @PatchMapping("/detail/{detailId}/toggle")
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'ROLE_MEMBER')")
+    public ResponseEntity<ApiResponse<String>> toggleWorkoutDetail(@PathVariable Long detailId) {
 
-        workoutService.completeWorkoutDetail(detailId);
+        // Service sẽ đảo ngược trạng thái is_completed trong DB
+        workoutService.toggleWorkoutDetailStatus(detailId);
 
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(200)
-                        .message("Đánh dấu hoàn thành bài tập thành công")
-                        .data(null)
+                        .message("Cập nhật trạng thái bài tập thành công")
+                        .data("Detail ID: " + detailId)
                         .build()
         );
     }
