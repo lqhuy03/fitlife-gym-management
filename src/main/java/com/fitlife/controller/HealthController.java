@@ -4,6 +4,7 @@ import com.fitlife.dto.ApiResponse;
 import com.fitlife.dto.HealthMetricRequest;
 import com.fitlife.entity.HealthMetric;
 import com.fitlife.service.HealthMetricService;
+import com.fitlife.service.impl.HealthMetricServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

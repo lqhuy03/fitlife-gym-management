@@ -5,6 +5,7 @@ import com.fitlife.dto.CheckInResponse;
 import com.fitlife.entity.User;
 import com.fitlife.repository.UserRepository;
 import com.fitlife.service.CheckInService;
+import com.fitlife.service.impl.CheckInServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

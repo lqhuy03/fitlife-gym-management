@@ -5,6 +5,7 @@ import com.fitlife.dto.GymPackageCreationRequest;
 import com.fitlife.dto.GymPackageResponse;
 import com.fitlife.dto.PageResponse;
 import com.fitlife.service.GymPackageService;
+import com.fitlife.service.impl.GymPackageServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

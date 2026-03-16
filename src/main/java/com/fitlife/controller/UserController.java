@@ -4,6 +4,7 @@ import com.fitlife.dto.ApiResponse;
 import com.fitlife.dto.UserCreationRequest;
 import com.fitlife.dto.UserResponse;
 import com.fitlife.service.UserService;
+import com.fitlife.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

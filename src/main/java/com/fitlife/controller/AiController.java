@@ -5,6 +5,7 @@ import com.fitlife.dto.AiWorkoutRequest;
 import com.fitlife.dto.ApiResponse;
 import com.fitlife.entity.AiWorkoutPlan;
 import com.fitlife.service.AiService;
+import com.fitlife.service.impl.AiServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

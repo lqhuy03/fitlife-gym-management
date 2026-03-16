@@ -4,6 +4,7 @@ import com.fitlife.dto.ApiResponse;
 import com.fitlife.dto.SubscriptionCreationRequest;
 import com.fitlife.dto.SubscriptionResponse;
 import com.fitlife.service.SubscriptionService;
+import com.fitlife.service.impl.SubscriptionServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

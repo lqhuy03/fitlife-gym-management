@@ -3,6 +3,7 @@ package com.fitlife.controller;
 import com.fitlife.dto.ApiResponse;
 import com.fitlife.entity.WorkoutPlan;
 import com.fitlife.service.WorkoutService;
+import com.fitlife.service.impl.WorkoutServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

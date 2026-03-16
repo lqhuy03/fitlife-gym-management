@@ -1,4 +1,4 @@
-package com.fitlife.service;
+package com.fitlife.service.impl;
 
 import com.fitlife.dto.MemberCreationRequest;
 import com.fitlife.dto.MemberResponse;
@@ -25,7 +25,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
-    private final CloudinaryService cloudinaryService;
+    private final CloudinaryServiceImpl cloudinaryServiceImpl;
 
     @Transactional
     public MemberResponse createMember(MemberCreationRequest request) {
@@ -60,14 +60,14 @@ public class MemberService {
         if (member.getAvatarUrl() != null) {
             String publicId = "avatars/member_" + member.getId();
             try {
-                cloudinaryService.deleteImage(publicId);
+                cloudinaryServiceImpl.deleteImage(publicId);
             } catch (Exception e) {
                 System.err.println("Không thể xóa ảnh cũ trên Cloudinary: " + e.getMessage());
             }
         }
 
         // Upload new photo
-        String avatarUrl = cloudinaryService.uploadImage(file, "avatars", "member_" + member.getId());
+        String avatarUrl = cloudinaryServiceImpl.uploadImage(file, "avatars", "member_" + member.getId());
         member.setAvatarUrl(avatarUrl);
 
         return avatarUrl;

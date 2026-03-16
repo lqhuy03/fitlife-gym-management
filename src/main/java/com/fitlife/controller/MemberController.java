@@ -8,7 +8,8 @@ import com.fitlife.dto.PageResponse; // Thêm thư viện này cho Phân trang
 import com.fitlife.entity.User;
 import com.fitlife.repository.UserRepository;
 import com.fitlife.service.DashboardService;
-import com.fitlife.service.MemberService;
+import com.fitlife.service.impl.DashboardServiceImpl;
+import com.fitlife.service.impl.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

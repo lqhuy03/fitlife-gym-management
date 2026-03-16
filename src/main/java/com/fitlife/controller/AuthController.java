@@ -2,6 +2,7 @@ package com.fitlife.controller;
 
 import com.fitlife.dto.*;
 import com.fitlife.service.AuthService;
+import com.fitlife.service.impl.AuthServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
