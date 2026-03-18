@@ -3,12 +3,21 @@ package com.fitlife.service;
 import com.fitlife.dto.GymPackageCreationRequest;
 import com.fitlife.dto.GymPackageResponse;
 import com.fitlife.dto.PageResponse;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface GymPackageService {
-    // Create Package
+
+    // Lấy danh sách có phân trang và tìm kiếm
+    PageResponse<GymPackageResponse> getAllPackages(int page, int size, String sortBy, String sortDir, String keyword);
+
+    // Lấy chi tiết 1 gói tập
+    GymPackageResponse getPackageById(Long id);
+
+    // Tạo gói tập mới
     GymPackageResponse createPackage(GymPackageCreationRequest request);
 
-    // Get List Pagination
-    PageResponse<GymPackageResponse> getAllPackages(int page, int size, String sortBy, String sortDir, String keyword);
+    // Cập nhật thông tin gói tập
+    GymPackageResponse updatePackage(Long id, GymPackageCreationRequest request);
+
+    // Xóa mềm (Đổi trạng thái ACTIVE/INACTIVE)
+    void togglePackageStatus(Long id);
 }

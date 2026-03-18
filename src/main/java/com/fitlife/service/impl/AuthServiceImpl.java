@@ -147,7 +147,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public LoginResponse googleLogin(String token) {
-        // 1. Mang Token sang server Google để xin thông tin User
+        // 1. Bring Token to the Google server to ask for User information
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
@@ -174,14 +174,14 @@ public class AuthServiceImpl implements AuthService {
         String name = (String) payload.get("name");
         String picture = (String) payload.get("picture");
 
-        // 2. Kiểm tra xem Email này đã có trong Database của FitLife chưa
+        // 2. Check Email have in the Database or not
         User user = userRepository.findByUsername(email).orElse(null);
 
         if (user == null) {
-            // 3. Nếu CHƯA CÓ -> Tự động đăng ký tài khoản mới cho khách
+            // 3. If don't have one -> Automatically register a new account for guests
             user = User.builder()
                     .username(email)
-                    .password(passwordEncoder.encode(UUID.randomUUID().toString())) // Sinh mật khẩu ngẫu nhiên không ai biết
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .role("ROLE_MEMBER")
                     .status("ACTIVE")
                     .build();
@@ -197,7 +197,7 @@ public class AuthServiceImpl implements AuthService {
             memberRepository.save(member);
         }
 
-        // 4. Nếu ĐÃ CÓ (hoặc vừa tạo xong) -> Cấp JWT Token của hệ thống mình cho họ
+        // 4. If you already have (or just created) -> Give them your system's JWT Token
         String jwtToken = jwtServiceImpl.generateToken(user);
 
         return LoginResponse.builder()

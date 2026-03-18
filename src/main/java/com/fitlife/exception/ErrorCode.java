@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
-    // Định nghĩa sẵn các lỗi nghiệp vụ tại đây
     USER_NOT_FOUND(404, "Không tìm thấy thông tin người dùng!"),
     MEMBER_NOT_FOUND(404, "Không tìm thấy thông tin hội viên!"),
     PHONE_ALREADY_EXISTS(400, "Số điện thoại này đã được đăng ký!"),

@@ -1,12 +1,9 @@
 package com.fitlife.controller;
 
 import com.fitlife.dto.ApiResponse;
-import com.fitlife.dto.GymPackageCreationRequest;
 import com.fitlife.dto.GymPackageResponse;
 import com.fitlife.dto.PageResponse;
 import com.fitlife.service.GymPackageService;
-import com.fitlife.service.impl.GymPackageServiceImpl;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +11,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/packages")
+@RequestMapping("/api/v1/packages") // Đổi đường dẫn có /api/v1 cho chuẩn RESTful
 @RequiredArgsConstructor
 public class GymPackageController {
 
     private final GymPackageService gymPackageService;
 
-    // List Package
+    // API PUBLIC: Dành cho Hội viên hoặc Khách chưa đăng nhập lướt xem các gói tập
     @GetMapping
     @PreAuthorize("permitAll()")
     public ResponseEntity<ApiResponse<PageResponse<GymPackageResponse>>> getAllPackages(
@@ -30,6 +27,7 @@ public class GymPackageController {
             @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(required = false) String keyword
     ) {
+        // Lưu ý: Đáng lẽ ở đây phải gọi hàm getActivePackages() để User không xem được các gói đã bị ẩn (Soft Delete)
         PageResponse<GymPackageResponse> result = gymPackageService.getAllPackages(page, size, sortBy, sortDir, keyword);
 
         return ResponseEntity.ok(ApiResponse.<PageResponse<GymPackageResponse>>builder()
@@ -37,20 +35,5 @@ public class GymPackageController {
                 .message("Lấy danh sách gói tập thành công")
                 .data(result)
                 .build());
-    }
-
-    // Create Package
-    @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<GymPackageResponse>> createPackage(@Valid @RequestBody GymPackageCreationRequest request) {
-        GymPackageResponse result = gymPackageService.createPackage(request);
-
-        ApiResponse<GymPackageResponse> response = ApiResponse.<GymPackageResponse>builder()
-                .code(HttpStatus.CREATED.value()) // 201
-                .message("Package created successfully")
-                .data(result)
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

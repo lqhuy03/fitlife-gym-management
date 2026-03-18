@@ -1,7 +1,9 @@
 package com.fitlife.controller;
 
-import com.fitlife.dto.request.GymPackageRequest;
-import com.fitlife.dto.response.GymPackageResponse;
+import com.fitlife.dto.ApiResponse;
+import com.fitlife.dto.GymPackageCreationRequest;
+import com.fitlife.dto.GymPackageResponse;
+import com.fitlife.dto.PageResponse;
 import com.fitlife.service.GymPackageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,44 +12,80 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/admin/packages")
+@RequestMapping("/admin/packages")
 @RequiredArgsConstructor
 // Bắt buộc phải có Role ADMIN mới được gọi các API này
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminGymPackageController {
 
-    // TIÊM INTERFACE (Không tiêm class Impl) - Đúng chuẩn em vừa học
     private final GymPackageService packageService;
 
+    // Lấy danh sách (Có phân trang)
     @GetMapping
-    public ResponseEntity<List<GymPackageResponse>> getAllPackages() {
-        return ResponseEntity.ok(packageService.getAllPackagesForAdmin());
+    public ResponseEntity<ApiResponse<PageResponse<GymPackageResponse>>> getAllPackages(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            @RequestParam(required = false) String keyword
+    ) {
+        PageResponse<GymPackageResponse> result = packageService.getAllPackages(page, size, sortBy, sortDir, keyword);
+
+        return ResponseEntity.ok(ApiResponse.<PageResponse<GymPackageResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Lấy danh sách gói tập (Admin) thành công")
+                .data(result)
+                .build());
     }
 
+    // Lấy chi tiết 1 gói tập
     @GetMapping("/{id}")
-    public ResponseEntity<GymPackageResponse> getPackageById(@PathVariable Long id) {
-        return ResponseEntity.ok(packageService.getPackageById(id));
+    public ResponseEntity<ApiResponse<GymPackageResponse>> getPackageById(@PathVariable Long id) {
+        GymPackageResponse result = packageService.getPackageById(id);
+
+        return ResponseEntity.ok(ApiResponse.<GymPackageResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Lấy thông tin chi tiết gói tập thành công")
+                .data(result)
+                .build());
     }
 
+    // Tạo gói tập mới
     @PostMapping
-    public ResponseEntity<GymPackageResponse> createPackage(@Valid @RequestBody GymPackageRequest request) {
-        return new ResponseEntity<>(packageService.createPackage(request), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse<GymPackageResponse>> createPackage(@Valid @RequestBody GymPackageCreationRequest request) {
+        GymPackageResponse result = packageService.createPackage(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.<GymPackageResponse>builder()
+                .code(HttpStatus.CREATED.value())
+                .message("Tạo gói tập mới thành công")
+                .data(result)
+                .build());
     }
 
+    // Cập nhật gói tập
     @PutMapping("/{id}")
-    public ResponseEntity<GymPackageResponse> updatePackage(
+    public ResponseEntity<ApiResponse<GymPackageResponse>> updatePackage(
             @PathVariable Long id,
-            @Valid @RequestBody GymPackageRequest request) {
-        return ResponseEntity.ok(packageService.updatePackage(id, request));
+            @Valid @RequestBody GymPackageCreationRequest request) {
+        GymPackageResponse result = packageService.updatePackage(id, request);
+
+        return ResponseEntity.ok(ApiResponse.<GymPackageResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Cập nhật thông tin gói tập thành công")
+                .data(result)
+                .build());
     }
 
-    // API vô hiệu hóa / kích hoạt lại gói tập (Soft Delete)
+    // Ẩn/Hiện gói tập (Soft Delete)
     @PatchMapping("/{id}/toggle-status")
-    public ResponseEntity<String> togglePackageStatus(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> togglePackageStatus(@PathVariable Long id) {
         packageService.togglePackageStatus(id);
-        return ResponseEntity.ok("Cập nhật trạng thái gói tập thành công!");
+
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .message("Cập nhật trạng thái gói tập thành công")
+                .data(null) // Data rỗng vì chỉ cần trả về thông báo thành công
+                .build());
     }
 }

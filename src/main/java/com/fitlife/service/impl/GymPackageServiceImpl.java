@@ -53,8 +53,8 @@ public class GymPackageServiceImpl implements GymPackageService {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        // 2. Config pagination
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        // 2. Config pagination (Đảm bảo page không bị âm)
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, sort);
 
         // 3. Query Database
         Page<GymPackage> packagePage;
@@ -64,7 +64,7 @@ public class GymPackageServiceImpl implements GymPackageService {
             packagePage = gymPackageRepository.findAll(pageable);
         }
 
-        // 4.  Entity -> DTO
+        // 4. Entity -> DTO
         List<GymPackageResponse> content = packagePage.getContent().stream()
                 .map(this::mapToResponse) // Gọi hàm phụ trợ cho gọn
                 .toList();
@@ -77,6 +77,51 @@ public class GymPackageServiceImpl implements GymPackageService {
                 .totalElements(packagePage.getTotalElements())
                 .data(content)
                 .build();
+    }
+
+    // Lấy chi tiết 1 gói tập
+    @Transactional(readOnly = true)
+    @Override
+    public GymPackageResponse getPackageById(Long id) {
+        GymPackage gymPackage = gymPackageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy gói tập với ID: " + id));
+        return mapToResponse(gymPackage);
+    }
+
+    // Cập nhật thông tin gói tập
+    @Transactional
+    @Override
+    public GymPackageResponse updatePackage(Long id, GymPackageCreationRequest request) {
+        GymPackage gymPackage = gymPackageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy gói tập với ID: " + id));
+
+        if (!gymPackage.getName().equals(request.getName()) && gymPackageRepository.existsByName(request.getName())) {
+            throw new RuntimeException("Tên gói tập đã tồn tại: " + request.getName());
+        }
+
+        gymPackage.setName(request.getName());
+        gymPackage.setDescription(request.getDescription());
+        gymPackage.setPrice(request.getPrice());
+        gymPackage.setDurationMonths(request.getDurationMonths());
+
+        GymPackage updatedPackage = gymPackageRepository.save(gymPackage);
+        return mapToResponse(updatedPackage);
+    }
+
+    // Xóa mềm (Đổi trạng thái ACTIVE/INACTIVE)
+    @Transactional
+    @Override
+    public void togglePackageStatus(Long id) {
+        GymPackage gymPackage = gymPackageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy gói tập với ID: " + id));
+
+        if ("ACTIVE".equals(gymPackage.getStatus())) {
+            gymPackage.setStatus("INACTIVE");
+        } else {
+            gymPackage.setStatus("ACTIVE");
+        }
+
+        gymPackageRepository.save(gymPackage);
     }
 
     // Function sp

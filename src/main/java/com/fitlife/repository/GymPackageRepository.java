@@ -14,4 +14,10 @@ public interface GymPackageRepository extends JpaRepository<GymPackage, Long> {
 
     // Pagination & Filter for name
     Page<GymPackage> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    // Lọc theo keyword và CHỈ LẤY GÓI ACTIVE
+    Page<GymPackage> findByNameContainingIgnoreCaseAndStatus(String name, String status, Pageable pageable);
+
+    // Nếu không có keyword, chỉ lấy gói ACTIVE
+    Page<GymPackage> findByStatus(String status, Pageable pageable);
 }

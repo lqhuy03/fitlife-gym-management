@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {
-            // Kiểm tra an toàn trước khi ép kiểu để tránh ClassCastException
+            // Check safe after press style avoid ClassCastException
             String fieldName = (error instanceof FieldError) ? ((FieldError) error).getField() : error.getObjectName();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
@@ -47,8 +47,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 3. CATCHING CUSTOM BUSINESS EXCEPTION (Thay thế cho RuntimeException cũ)
-    // Lưu ý: Bạn cần tạo class AppException extends RuntimeException trong dự án
+    // 3. CATCHING CUSTOM BUSINESS EXCEPTION
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<String>> handleAppException(AppException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -59,7 +58,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 4. CATCH-ALL: BẮT MỌI LỖI HỆ THỐNG KHÔNG MONG MUỐN (NPE, DB Error...)
+    // 4. CATCH-ALL: Caught any unwanted system errors (NPE, DB Error...)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGlobalException(Exception ex) {
         // Gợi ý: Ghi log lỗi tại đây (log.error("Lỗi hệ thống: ", ex))
