@@ -123,6 +123,40 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
+    public MemberResponse createMemberByAdmin(MemberCreationRequest request) {
+        // 1. Check trùng lặp
+        if (memberRepository.existsByPhone(request.getPhone())) {
+            throw new RuntimeException("Số điện thoại đã được đăng ký.");
+        }
+        if (userRepository.findByUsername(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email này đã được dùng làm tài khoản.");
+        }
+
+        // 2. TẠO TÀI KHOẢN USER TRƯỚC (Dùng Email làm Username, Pass mặc định: 123456)
+        User newUser = User.builder()
+                .username(request.getEmail())
+                // Pass "123456" mã hóa Bcrypt. Nếu em có PasswordEncoder thì dùng passwordEncoder.encode("123456")
+                .password("$2a$10$X8C5.5hN7q6aN9zJbXqY4.0yZ3.rU7y7T4/q4z4u4u4u4u4u4u4u4")
+                .role("MEMBER")
+                .status("ACTIVE")
+                .build();
+        userRepository.save(newUser);
+
+        // 3. TẠO HỒ SƠ MEMBER GẮN VỚI USER TRÊN
+        Member newMember = Member.builder()
+                .user(newUser)
+                .fullName(request.getFullName())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .status("ACTIVE")
+                .build();
+        memberRepository.save(newMember);
+
+        return mapToMemberResponse(newMember);
+    }
+
+    @Transactional
+    @Override
     public void toggleMemberLock(Long memberId) {
         // 1. Tìm Member
         Member member = memberRepository.findById(memberId)

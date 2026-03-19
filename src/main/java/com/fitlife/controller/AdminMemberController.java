@@ -38,6 +38,17 @@ public class AdminMemberController {
                 .build());
     }
 
+    // THÊM HỘI VIÊN (TẠO LUÔN TÀI KHOẢN ĐĂNG NHẬP)
+    @PostMapping
+    public ResponseEntity<ApiResponse<MemberResponse>> createMemberByAdmin(@RequestBody com.fitlife.dto.MemberCreationRequest request) {
+        MemberResponse result = memberService.createMemberByAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.<MemberResponse>builder()
+                .code(HttpStatus.CREATED.value())
+                .message("Thêm hội viên và tạo tài khoản thành công")
+                .data(result)
+                .build());
+    }
+
     // 2. API KHÓA / MỞ KHÓA TÀI KHOẢN (TOGGLE LOCK)
     @PatchMapping("/{id}/toggle-lock")
     public ResponseEntity<ApiResponse<String>> toggleMemberLock(@PathVariable Long id) {

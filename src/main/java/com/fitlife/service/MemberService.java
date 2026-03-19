@@ -15,6 +15,8 @@ public interface MemberService {
 
     PageResponse<MemberResponse> getAllMembers(int page, int size, String sortBy, String sortDir, String keyword);
 
+    MemberResponse createMemberByAdmin(MemberCreationRequest request);
+
     void toggleMemberLock(Long memberId);
 
     MemberResponse getMemberById(Long memberId);
