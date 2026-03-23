@@ -9,7 +9,6 @@ import com.fitlife.repository.*;
 import com.fitlife.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     private final MemberRepository memberRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final HealthMetricRepository HealthMetricRepository;
+    private final HealthMetricRepository healthMetricRepository;
     private final CheckInHistoryRepository checkInHistoryRepository;
     private final WorkoutPlanRepository workoutPlanRepository;
     private final WorkoutDetailRepository workoutDetailRepository;
@@ -36,7 +35,7 @@ public class DashboardServiceImpl implements DashboardService {
         DashboardResponse.DashboardResponseBuilder response = DashboardResponse.builder()
                 .memberName(member.getFullName());
 
-        // 1. KIỂM TRA GÓI TẬP (Giữ nguyên logic cực xịn của em)
+        // 1. KIỂM TRA GÓI TẬP
         Optional<Subscription> activeSub = subscriptionRepository.findFirstByMemberAndStatus(member, "ACTIVE");
         if (activeSub.isPresent()) {
             Subscription sub = activeSub.get();
@@ -49,16 +48,13 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         // ==========================================
-        // 2. XỬ LÝ SỐ ĐO SỨC KHỎE (BẢN CHỐNG NULL)
+        // 2. XỬ LÝ SỐ ĐO SỨC KHỎE (CLEAN & SIMPLE)
         // ==========================================
-
-        // Bước A: Lấy dữ liệu gốc từ bảng Member làm nền tảng
         Double finalHeight = member.getHeight();
         Double finalWeight = member.getWeight();
         Double finalBmi = 0.0;
 
-        // Bước B: Thử tìm dữ liệu mới nhất trong bảng HealthMetric để ghi đè
-        Optional<HealthMetric> latestHealth = HealthMetricRepository.findFirstByMemberOrderByRecordedAtDesc(member);
+        Optional<HealthMetric> latestHealth = healthMetricRepository.findFirstByMemberOrderByRecordedAtDesc(member);
         if (latestHealth.isPresent()) {
             HealthMetric hm = latestHealth.get();
             if (hm.getHeight() != null) finalHeight = hm.getHeight();
@@ -66,33 +62,32 @@ public class DashboardServiceImpl implements DashboardService {
             if (hm.getBmi() != null) finalBmi = hm.getBmi();
         }
 
-        // Bước C: Tính lại BMI nếu trong DB đang bằng 0 nhưng lại có Chiều cao/Cân nặng
         if ((finalBmi == null || finalBmi == 0.0) && finalHeight != null && finalWeight != null && finalHeight > 0) {
             double heightInMeters = finalHeight / 100.0;
             finalBmi = finalWeight / (heightInMeters * heightInMeters);
-            finalBmi = Math.round(finalBmi * 10.0) / 10.0; // Làm tròn 1 số thập phân
+            finalBmi = Math.round(finalBmi * 10.0) / 10.0;
         }
 
-        // Bước D: Đưa vào DTO trả về
-        response.currentHeight(finalHeight)
-                .currentWeight(finalWeight)
+        response.currentHeight(finalHeight != null ? finalHeight : 0.0)
+                .currentWeight(finalWeight != null ? finalWeight : 0.0)
                 .bmi(finalBmi)
                 .bmiCategory(evaluateBMI(finalBmi));
 
         // ==========================================
-
         // 3. ĐẾM SỐ LƯỢT CHECK-IN THÁNG NÀY
         LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
         LocalDateTime endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()).atTime(LocalTime.MAX);
         int checkins = checkInHistoryRepository.countCheckinsInPeriod(memberId, startOfMonth, endOfMonth);
         response.totalCheckinsThisMonth(checkins);
 
+        // ==========================================
         // 4. TÍNH CALO VÀ BÀI TẬP HOÀN THÀNH
-        Optional<WorkoutPlan> currentPlan = workoutPlanRepository.findByMemberAndStatus(member, WorkoutPlan.PlanStatus.ACTIVE);
+        // FIX: Truyền trực tiếp chuỗi "ACTIVE" vào Repository
+        Optional<WorkoutPlan> currentPlan = workoutPlanRepository.findByMemberAndStatus(member, "ACTIVE");
+
         if (currentPlan.isPresent()) {
             int completedEx = workoutDetailRepository.countCompletedExercisesByPlanId(currentPlan.get().getId());
             response.completedExercises(completedEx);
-            // FORMULA: 1 bài = 45 Kcal.
             response.estimatedCaloriesBurned(completedEx * 45);
         } else {
             response.completedExercises(0);
@@ -102,11 +97,9 @@ public class DashboardServiceImpl implements DashboardService {
         return response.build();
     }
 
-    // AI của hệ thống đánh giá tự động
-    // LƯU Ý: Anh đã đưa các câu vui vui vào dấu ngoặc. Frontend chỉ bắt chữ cái đầu để đổi màu.
     private String evaluateBMI(Double bmi) {
         if (bmi == null || bmi == 0.0) return "Chưa có dữ liệu";
-        if (bmi < 18.5) return "Thiếu cân"; // Nếu muốn hiện thêm text, ở Frontend sửa lại điều kiện bao gồm (includes) chữ "Thiếu cân"
+        if (bmi < 18.5) return "Thiếu cân";
         if (bmi >= 18.5 && bmi < 24.9) return "Bình thường";
         if (bmi >= 25 && bmi < 29.9) return "Thừa cân";
         return "Béo phì";

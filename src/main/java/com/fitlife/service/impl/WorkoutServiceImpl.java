@@ -29,8 +29,8 @@ public class WorkoutServiceImpl implements WorkoutService {
         Member member = memberRepository.findByUserUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin hội viên"));
 
-        // Trả về lịch tập đang ACTIVE
-        return workoutPlanRepository.findByMemberAndStatus(member, WorkoutPlan.PlanStatus.ACTIVE)
+        // FIX: Truyền chuỗi "ACTIVE" thay vì dùng Enum
+        return workoutPlanRepository.findByMemberAndStatus(member, "ACTIVE")
                 .orElseThrow(() -> new RuntimeException("Bạn hiện không có lịch tập nào đang kích hoạt."));
     }
 

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -49,7 +50,7 @@ public class VnPayServiceImpl implements PaymentService {
         vnp_Params.put("vnp_Version", vnPayConfig.getVnp_Version());
         vnp_Params.put("vnp_Command", vnPayConfig.getVnp_Command());
         vnp_Params.put("vnp_TmnCode", vnPayConfig.getVnpTmnCode());
-        vnp_Params.put("vnp_Amount", String.valueOf((long)(payment.getAmount() * 100L)));
+        vnp_Params.put("vnp_Amount", String.valueOf(payment.getAmount().multiply(new BigDecimal("100")).longValue()));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", String.valueOf(payment.getId()));
         vnp_Params.put("vnp_OrderInfo", "Thanh toan Sub ID: " + subscriptionId);

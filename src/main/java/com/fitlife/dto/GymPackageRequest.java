@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class GymPackageRequest {
@@ -15,7 +17,7 @@ public class GymPackageRequest {
 
     @NotNull(message = "Giá tiền không được để trống")
     @Min(value = 0, message = "Giá tiền không được nhỏ hơn 0")
-    private Double price;
+    private BigDecimal price;
 
     @NotNull(message = "Thời hạn không được để trống")
     @Min(value = 1, message = "Thời hạn phải ít nhất 1 tháng")

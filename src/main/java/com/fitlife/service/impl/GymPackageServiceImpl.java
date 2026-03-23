@@ -1,6 +1,6 @@
 package com.fitlife.service.impl;
 
-import com.fitlife.dto.GymPackageCreationRequest;
+import com.fitlife.dto.GymPackageRequest;
 import com.fitlife.dto.GymPackageResponse;
 import com.fitlife.dto.PageResponse;
 import com.fitlife.entity.GymPackage;
@@ -25,7 +25,7 @@ public class GymPackageServiceImpl implements GymPackageService {
     // Create Package
     @Transactional
     @Override
-    public GymPackageResponse createPackage(GymPackageCreationRequest request) {
+    public GymPackageResponse createPackage(GymPackageRequest request) {
         if (gymPackageRepository.existsByName(request.getName())) {
             throw new RuntimeException("Package name already exists: " + request.getName());
         }
@@ -91,7 +91,7 @@ public class GymPackageServiceImpl implements GymPackageService {
     // Cập nhật thông tin gói tập
     @Transactional
     @Override
-    public GymPackageResponse updatePackage(Long id, GymPackageCreationRequest request) {
+    public GymPackageResponse updatePackage(Long id, GymPackageRequest request) {
         GymPackage gymPackage = gymPackageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy gói tập với ID: " + id));
 

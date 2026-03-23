@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface WorkoutPlanRepository extends JpaRepository<WorkoutPlan, Long> {
     @EntityGraph(value = "WorkoutPlan.fullGraph", type = EntityGraph.EntityGraphType.LOAD)
-    Optional<WorkoutPlan> findByMemberAndStatus(Member member, WorkoutPlan.PlanStatus status);
+    Optional<WorkoutPlan> findByMemberAndStatus(Member member, String status);
 }

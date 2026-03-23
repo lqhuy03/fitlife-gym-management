@@ -111,9 +111,11 @@ public class AiServiceImpl implements AiService {
         try {
             JsonNode root = objectMapper.readTree(aiPlanRecord.getPlanData());
 
-            workoutPlanRepository.findByMemberAndStatus(member, WorkoutPlan.PlanStatus.ACTIVE)
+            // FIX 1: Đổi Enum thành chuỗi "ACTIVE"
+            workoutPlanRepository.findByMemberAndStatus(member, "ACTIVE")
                     .ifPresent(p -> {
-                        p.setStatus(WorkoutPlan.PlanStatus.CANCELLED);
+                        // FIX 2: Đổi Enum thành chuỗi "CANCELLED"
+                        p.setStatus("CANCELLED");
                         workoutPlanRepository.save(p);
                     });
 
@@ -122,7 +124,8 @@ public class AiServiceImpl implements AiService {
                     .description(root.path("advice").asText())
                     .member(member)
                     .startDate(LocalDateTime.now())
-                    .status(WorkoutPlan.PlanStatus.ACTIVE)
+                    // FIX 3: Đổi Enum thành chuỗi "ACTIVE"
+                    .status("ACTIVE")
                     .build();
 
             Set<WorkoutSession> sessions = new LinkedHashSet<>();
@@ -140,7 +143,8 @@ public class AiServiceImpl implements AiService {
 
                 for (JsonNode exNode : exercisesNode) {
                     WorkoutDetail detail = WorkoutDetail.builder()
-                            .exercise_name(exNode.path("name").asText())
+                            // FIX 4: Đổi exercise_name thành exerciseName chuẩn camelCase
+                            .exerciseName(exNode.path("name").asText())
                             .sets(exNode.path("sets").asInt())
                             .reps(exNode.path("reps").asText())
                             .notes(exNode.path("notes").asText())

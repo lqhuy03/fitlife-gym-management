@@ -1,6 +1,6 @@
 package com.fitlife.service;
 
-import com.fitlife.dto.GymPackageCreationRequest;
+import com.fitlife.dto.GymPackageRequest;
 import com.fitlife.dto.GymPackageResponse;
 import com.fitlife.dto.PageResponse;
 
@@ -13,10 +13,12 @@ public interface GymPackageService {
     GymPackageResponse getPackageById(Long id);
 
     // Tạo gói tập mới
-    GymPackageResponse createPackage(GymPackageCreationRequest request);
+    default GymPackageResponse createPackage(GymPackageRequest request) {
+        return null;
+    }
 
     // Cập nhật thông tin gói tập
-    GymPackageResponse updatePackage(Long id, GymPackageCreationRequest request);
+    GymPackageResponse updatePackage(Long id, GymPackageRequest request);
 
     // Xóa mềm (Đổi trạng thái ACTIVE/INACTIVE)
     void togglePackageStatus(Long id);
