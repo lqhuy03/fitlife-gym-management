@@ -1,6 +1,7 @@
-package com.fitlife.payment;
+package com.fitlife.payment.controller;
 
 import com.fitlife.core.response.ApiResponse;
+import com.fitlife.payment.service.PaymentService;
 import com.fitlife.payment.dto.PaymentResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

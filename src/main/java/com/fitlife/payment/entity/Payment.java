@@ -1,4 +1,4 @@
-package com.fitlife.payment;
+package com.fitlife.payment.entity;
 
 import com.fitlife.subscription.Subscription;
 import jakarta.persistence.*;

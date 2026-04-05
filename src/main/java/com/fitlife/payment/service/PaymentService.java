@@ -1,4 +1,4 @@
-package com.fitlife.payment;
+package com.fitlife.payment.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 
