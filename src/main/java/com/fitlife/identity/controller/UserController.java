@@ -1,6 +1,9 @@
-package com.fitlife.identity;
+package com.fitlife.identity.controller;
 
 import com.fitlife.core.response.ApiResponse;
+import com.fitlife.identity.UserCreationRequest;
+import com.fitlife.identity.UserResponse;
+import com.fitlife.identity.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,10 @@
 package com.fitlife.identity;
 
+import com.fitlife.identity.controller.UserCreationRequest;
+import com.fitlife.identity.dto.UserResponse;
 import com.fitlife.identity.entity.User;
+import com.fitlife.identity.repository.UserRepository;
+import com.fitlife.identity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

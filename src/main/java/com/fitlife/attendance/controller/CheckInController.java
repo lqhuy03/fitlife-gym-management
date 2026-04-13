@@ -3,7 +3,7 @@ package com.fitlife.attendance;
 import com.fitlife.attendance.dto.CheckInResponse;
 import com.fitlife.core.response.ApiResponse;
 import com.fitlife.identity.entity.User;
-import com.fitlife.identity.UserRepository;
+import com.fitlife.identity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

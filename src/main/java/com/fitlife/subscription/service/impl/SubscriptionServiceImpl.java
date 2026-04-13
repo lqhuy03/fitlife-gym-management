@@ -1,9 +1,9 @@
 package com.fitlife.subscription;
 
-import com.fitlife.packagegym.GymPackage;
+import com.fitlife.packagegym.entity.GymPackage;
 import com.fitlife.member.entity.Member;
-import com.fitlife.packagegym.GymPackageRepository;
-import com.fitlife.member.MemberRepository;
+import com.fitlife.packagegym.repository.GymPackageRepository;
+import com.fitlife.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

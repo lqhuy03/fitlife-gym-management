@@ -5,7 +5,7 @@ import com.fitlife.identity.entity.User;
 import com.fitlife.member.dto.MemberCreationRequest;
 import com.fitlife.member.dto.MemberProfileResponse;
 import com.fitlife.member.entity.Member;
-import com.fitlife.identity.UserRepository;
+import com.fitlife.identity.repository.UserRepository;
 import com.fitlife.core.storage.CloudinaryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
