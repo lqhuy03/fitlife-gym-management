@@ -1,5 +1,7 @@
-package com.fitlife.identity;
+package com.fitlife.identity.service;
 
+import com.fitlife.identity.dto.*;
+import com.fitlife.identity.repository.UserRepository;
 import com.fitlife.member.entity.Member;
 import com.fitlife.identity.entity.User;
 import com.fitlife.member.MemberRepository;

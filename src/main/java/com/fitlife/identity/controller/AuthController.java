@@ -1,6 +1,7 @@
-package com.fitlife.identity;
+package com.fitlife.identity.controller;
 
 import com.fitlife.core.response.ApiResponse;
+import com.fitlife.identity.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

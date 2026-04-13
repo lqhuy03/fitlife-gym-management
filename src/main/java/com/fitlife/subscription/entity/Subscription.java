@@ -1,7 +1,7 @@
 package com.fitlife.subscription;
 
 import com.fitlife.member.entity.Member;
-import com.fitlife.packagegym.GymPackage;
+import com.fitlife.packagegym.entity.GymPackage;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -2,17 +2,15 @@ package com.fitlife.member;
 
 import com.fitlife.core.response.ApiResponse;
 import com.fitlife.core.response.PageResponse;
-import com.fitlife.identity.entity.User;
 import com.fitlife.member.dto.MemberCreationRequest;
 import com.fitlife.member.dto.MemberProfileResponse;
-import com.fitlife.identity.UserRepository; // Lưu ý: Tương lai nên chuyển việc gọi DB này xuống tầng Service
+import com.fitlife.identity.repository.UserRepository; // Lưu ý: Tương lai nên chuyển việc gọi DB này xuống tầng Service
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
